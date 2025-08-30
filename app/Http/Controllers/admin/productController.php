@@ -51,100 +51,6 @@ class productController extends Controller
         return redirect()->back();
     }
 
-    // public function addEditProduct(Request $request, $id = null)
-    // {
-    //     if ($id == "") {
-    //         $title = "Add Product";
-    //         $product = new product;  //this line is to create a new product
-    //         $productData = array();
-    //         $message = 'Product added successfully !';
-    //     } else {
-    //         $title = "Edit Product";
-    //         $productData = product::find($id);
-    //         $productData = json_decode(json_encode($productData), true);
-    //         $product = product::find($id);  //this line is to update the details
-    //         $message = 'Product updated successfully !';
-    //     }
-
-    //     if ($request->isMethod('post')) {
-    //         $data = $request->all();
-    //         //validating the form
-    //         $rules = [
-    //             'category_id' => 'required',
-    //             'product_name' => 'required',
-    //             'price' => 'required|numeric',
-    //         ];
-    //         $customMessages = [
-    //             'category_id.required' => 'Category is required',
-    //             'product_name.required' => 'Product name is required',
-    //             // 'product_name.regex' => 'Valid Product name is required',
-    //             'price.required' => 'Product price is required',
-    //             'price.numeric' => 'Valid Product price is required',
-    //         ];
-    //         $this->validate($request, $rules, $customMessages);
-    //         //Upload product image
-    //         if ($request->hasFile('main_image')) {
-    //             $image_tmp = $request->file('main_image');
-
-    //             if ($image_tmp->isValid()) {
-    //                 $imageName = Str::slug(pathinfo($image_tmp->getClientOriginalName(), PATHINFO_FILENAME));
-    //                 $extension = $image_tmp->getClientOriginalExtension();
-    //                 $imageName = $imageName . '-' . rand(111, 999) . '.' . $extension;
-
-    //                 // Paths relative to storage/app/public
-    //                 $mediumPath = 'product_images/medium/' . $imageName;
-    //                 $smallPath = 'product_images/small/' . $imageName;
-
-    //                 // Save image using Intervention and Laravel Storage
-    //                 Storage::disk('public')->put($mediumPath, (string) Image::make($image_tmp)->resize(520, 590)->encode());
-    //                 Storage::disk('public')->put($smallPath, (string) Image::make($image_tmp)->resize(260, 270)->encode());
-
-    //                 $product->main_image = $imageName;
-    //             }
-    //         }
-    //         //save product details into the product table in the database
-    //         $categoryDetails = category::find($data['category_id']);
-    //         $product->category_id = $data['category_id'];
-    //         $product->product_name = $data['product_name'];
-    //         $product->price = $data['price'];
-    //         $product->quantity = $data['quantity'];
-    //         $product->unit = $data['unit'] ? $data['unit'] : 'kg';
-    //         $product->product_weight = $data['product_weight'] ? $data['product_weight'] : 0;
-    //         $product->product_discount = $data['product_discount'] ? $data['product_discount'] : 0;
-    //         $product->description = $data['description'];
-
-    //         if (!empty($data['is_featured'])) {
-    //             $product->is_featured = $data['is_featured'];
-    //         }
-    //         $product->status = 1;
-    //         $product->save();
-
-    //         //send notifications to all users here
-    //         // $client = new Client();
-    //         // $endpoint = 'https://app.farmersmarketplace.ng/products/notify';
-
-    //         // $postData = [
-    //         //     'prod_name' => $data['product_name'],
-    //         //     'status'   => $id == "" ? "add" : "update"
-
-    //         // ];
-
-    //         // Make a POST request to the external endpoint with the data
-    //         // $response = $client->post($endpoint, [
-    //         //     'json' => $postData,
-    //         // ]);
-    //         // $body = $response->getBody()->getContents();
-
-    //         Session::flash('Success_message', $message);
-    //         return redirect('admin/products');
-    //     }
-
-    //     //sections with categories and subCategories
-    //     $categories = category::get();
-    //     return view('admin.products.add_edit_product')->with(compact('title', 'categories', 'productData'));
-    // }
-
-
     public function addEditProduct(Request $request, $id = null)
     {
         if ($id == "") {
@@ -225,18 +131,22 @@ class productController extends Controller
 
     public function deleteProductImage($id)
     {
-        //get the category image you wanna delete
-
-        $productImage = productsImage::where('id', $id)->first();
+        // Get the product image record
+        $productImage = productsImage::findOrFail($id);
 
         if ($productImage) {
-            Storage::disk('public')->delete('product_images/small/' . $productImage->main_image);
-            Storage::disk('public')->delete('product_images/medium/' . $productImage->main_image);
-            //delete category image from categories table
-            product::where('id', $id)->update(['main_image' => '']);
+            // Delete images from storage
+            Storage::disk('public')->delete('product_images/small/' . $productImage->image);
+            Storage::disk('public')->delete('product_images/medium/' . $productImage->image);
+            Storage::disk('public')->delete('product_images/large/' . $productImage->image);
+
+            // Delete record from products_images table
+            $productImage->delete();
         }
+
         return redirect()->back()->with('flash_message_success', 'Product image has been deleted successfully!');
     }
+
 
     public function addImages(Request $request, $id)
     {
