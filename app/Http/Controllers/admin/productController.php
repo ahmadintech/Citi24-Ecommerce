@@ -227,7 +227,7 @@ class productController extends Controller
     {
         //get the category image you wanna delete
 
-        $productImage = product::select('main_image')->where('id', $id)->first();
+        $productImage = productsImage::where('id', $id)->first();
 
         if ($productImage) {
             Storage::disk('public')->delete('product_images/small/' . $productImage->main_image);

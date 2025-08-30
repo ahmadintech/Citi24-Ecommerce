@@ -127,95 +127,60 @@ use Illuminate\Support\Facades\Session; ?>
                                     </div>
                                 </div>
 
-                                {{-- <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="main_image">Product Main Image</label>
-                                        <div class="input-group">
-                                            <div class="custom-file">
-                                                <input type="file" class="custom-file-input" id="main_image"
-                                                    name="main_image">
-                                                <label class="custom-file-label" for="main_image">Choose file</label>
-                                            </div>
-                                            <div class="input-group-append">
-                                                <span class="input-group-text" id="">Upload</span>
-                                            </div>
-                                        </div>
-                                        <div style="color: grey;">Recommended Image size: Width:1040px Height:1180px
-                                        </div>
-                                        @if (!empty($productData['main_image']))
-                                            <img src=" {{ asset('storage/product_images/small/' . $productData['main_image']) }} "style="margin-top:1%;"
-                                                height="100px" width="100px">
-                                            &nbsp;<a class="confirmDelete" record="product-image"
-                                                recordid="{{ $productData['id'] }}" href="javascript:void(0)">Delete
-                                                Image</a>
-                                        @endif
-                                    </div>
-                                </div> --}}
-
                                 <div class="col-md-12">
-    <div class="form-group">
-        <label for="product_images">Product Images</label>
-        <div>
-                <input
-                    type="file"
-                    class="form-control"
-                    id="product_images"
-                    name="product_images[]"
-                    multiple
-                    accept="image/*"
-                >
-        </div>
-        <small class="text-primary py-2">Recommended Image size: Width:1040px Height:1180px</small>
+                                    <div class="form-group">
+                                        <label for="product_images">Product Images</label>
+                                        <div>
+                                            <input type="file" class="form-control" id="product_images"
+                                                name="product_images[]" multiple accept="image/*">
+                                        </div>
+                                        <small class="text-primary py-2">Recommended Image size: Width:1040px
+                                            Height:1180px</small>
 
-        {{-- Show uploaded images if available --}}
-        @if (!empty($productImages) && count($productImages) > 0)
-            <div class="row mt-2">
-                @foreach ($productImages as $image)
-                    <div class="col-md-2 text-center mb-2">
-                        <img
-                            src="{{ asset('storage/product_images/small/' . $image->image) }}"
-                            alt="Product Image"
-                            class="img-thumbnail"
-                            style="height: 100px; width: 100px; object-fit: cover;"
-                        >
-                        <br>
-                        <a href="javascript:void(0)"
-                           class="confirmDelete text-danger"
-                           record="product-image"
-                           recordid="{{ $image->id }}">
-                           Delete
-                        </a>
-                    </div>
-                @endforeach
-            </div>
-        @endif
+                                        {{-- Show uploaded images if available --}}
+                                        @if (!empty($productImages) && count($productImages) > 0)
+                                            <div class="row mt-2">
+                                                @foreach ($productImages as $image)
+                                                    <div class="col-md-2 text-center mb-2">
+                                                        <img src="{{ asset('storage/product_images/small/' . $image->image) }}"
+                                                            alt="Product Image" class="img-thumbnail"
+                                                            style="height: 100px; width: 100%; object-fit: cover;">
+                                                        <br>
+                                                        <a href="javascript:void(0)" class="confirmDelete text-danger"
+                                                            record="product-image" recordid="{{ $image->id }}">
+                                                            Delete
+                                                        </a>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @endif
 
-        {{-- Preview newly selected images before upload --}}
-        <div id="preview-container" class="row mt-3"></div>
-    </div>
-</div>
+                                        {{-- Preview newly selected images before upload --}}
+                                        <div id="preview-container" class="row mt-3"></div>
+                                    </div>
+                                </div>
 
-{{-- Preview Script --}}
-<script>
-document.getElementById('product_images').addEventListener('change', function(event) {
-    let previewContainer = document.getElementById('preview-container');
-    previewContainer.innerHTML = ""; // clear previous preview
+                                {{-- Preview Script --}}
+                                <script>
+                                    document.getElementById('product_images').addEventListener('change', function(event) {
+                                        let previewContainer = document.getElementById('preview-container');
+                                        previewContainer.innerHTML = ""; // clear previous preview
 
-    [...event.target.files].forEach(file => {
-        let reader = new FileReader();
-        reader.onload = e => {
-            let col = document.createElement("div");
-            col.className = "col-md-2 mb-2";
-            col.innerHTML = `
+                                        [...event.target.files].forEach(file => {
+                                            let reader = new FileReader();
+                                            reader.onload = e => {
+                                                let col = document.createElement("div");
+                                                col.className = "col-md-2 mb-2";
+                                                col.innerHTML = `
                 <img src="${e.target.result}" class="img-thumbnail"
-                     style="height:100px;width:100px;object-fit:cover;" />
+                     style="height:100px;width:100%;object-fit:cover;" />
             `;
-            previewContainer.appendChild(col);
-        };
-        reader.readAsDataURL(file);
-    });
-});
-</script>
+                                                previewContainer.appendChild(col);
+                                            };
+                                            reader.readAsDataURL(file);
+                                        });
+                                    });
+                                </script>
 
 
                                 <div class="col-md-6">
